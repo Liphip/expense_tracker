@@ -2,8 +2,6 @@
 
 Simple expense tracker for group activities (i.e. trips and events).
 
-**Note:** This README is also available in [German](README-de.md).
-
 ## Table of Contents
 
 - [License](#license)
