@@ -205,6 +205,56 @@ table tr:hover td {
   color: var(--secondary-color);
 }
 
+#tagGuestAssociation-table {
+  width: 100%;
+  border-spacing: 0;
+  border: 1px solid var(--primary-color);
+  padding: 1em;
+  color: var(--primary-color);
+}
+
+#tagGuestAssociation-table th,
+#tagGuestAssociation-table td {
+  text-align: left;
+  padding: 0.5em;
+}
+
+#tagGuestAssociation-table th {
+  background-color: var(--quaternary-color);
+}
+
+#tagGuestAssociation-table tr:nth-child(odd) {
+  background-color: var(--secondary-color);
+}
+
+#tagGuestAssociation-table tr:nth-child(even) {
+  background-color: var(--quaternary-color);
+}
+
+#tagGuestAssociation-table tr:hover {
+  background-color: var(--tertiary-color);
+}
+
+#tagGuestAssociation-table tr:hover td {
+  color: var(--secondary-color);
+}
+
+#tagGuestAssociation-table input[type="checkbox"] {
+  width: 1em;
+  height: 1em;
+  cursor: pointer;
+}
+
+#tagGuestAssociation-table input[type="checkbox"]:checked {
+  background-color: var(--tertiary-color);
+  border-color: var(--tertiary-color);
+}
+
+#tagGuestAssociation-table input[type="checkbox"]:hover {
+  background-color: var(--quaternary-color);
+  border-color: var(--quaternary-color);
+}
+
 .input {
   margin-bottom: 1em;
   display: flex;

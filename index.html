@@ -164,7 +164,9 @@
           <h3>Options</h3>
           <div>
             <button class="input input-button input-inline">Clear All</button>
-            <button class="input input-button input-inline forbidden" disabled>Download CSV</button>
+            <button class="input input-button input-inline forbidden" disabled>
+              Download CSV
+            </button>
           </div>
         </div>
 
@@ -178,6 +180,18 @@
             <h3>Average per Guest</h3>
             <p id="averagePerGuestOverview">0.00$</p>
           </div>
+          <div>
+            <h3>Average per Tag</h3>
+            <p id="averagePerTagOverview">0.00$</p>
+          </div>
+          <div>
+            <h3>Tag - Guest Association</h3>
+            <table id="tagGuestAssociation-table">
+              <tr>
+                <td colspan="1">Add at least one guest and one tag</td>
+              </tr>
+            </table>
+          </div>
         </div>
 
         <div class="app-item">
@@ -188,6 +202,7 @@
                 <th>Name</th>
                 <th>Tags</th>
                 <th>Expenses</th>
+                <th>Expenses Amount</th>
                 <th></th>
               </tr>
             </thead>
@@ -207,6 +222,7 @@
                 <th>Name</th>
                 <th>Guests</th>
                 <th>Expenses</th>
+                <th>Expense Amount</th>
                 <th></th>
               </tr>
             </thead>

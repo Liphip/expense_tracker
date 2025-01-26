@@ -22,6 +22,18 @@ class ExpenseTracker {
     return ExpenseTracker.allTags.map((tag) => tag.totalExpenses);
   }
 
+  static get all() {
+    return {
+      tags: ExpenseTracker.allTags,
+      expenses: ExpenseTracker.allExpenses,
+      guests: ExpenseTracker.allGuests,
+    };
+  }
+
+  static toString() {
+    return `ExpenseTracker: ${ExpenseTracker.totalTags} tags, ${ExpenseTracker.totalExpenses} expenses, ${ExpenseTracker.totalGuests} guests`;
+  }
+
   static getTag(id) {
     return ExpenseTracker.tags[id];
   }
@@ -178,10 +190,10 @@ class ExpenseTracker {
     return ExpenseTracker.createExpense(null, name, amount, issuerID, tagID);
   }
 
-  static createExpense(id = null, name, amount, issuerID, tagID) {
+  static createExpense(id = null, name, amount, issuerID, tagIDs) {
     if (ExpenseTracker.getExpenseByName(name))
       throw new Error("Expense already exists");
-    const expense = new Expense(id, name, amount, issuerID, tagID);
+    const expense = new Expense(id, name, amount, issuerID, tagIDs);
     this.expenses[expense.id] = expense;
     return expense;
   }
@@ -193,6 +205,26 @@ class ExpenseTracker {
       return;
     }
     expense.removeSelf();
+  }
+
+  static addGuestTagAssociation(guestID, tagID) {
+    console.log("Adding guest tag association", guestID, tagID);
+    const guest = ExpenseTracker.getGuest(guestID);
+    if (!guest) throw new Error("Guest not found");
+    const tag = ExpenseTracker.getTag(tagID);
+    if (!tag) throw new Error("Tag not found");
+    guest.addTag(tagID);
+    tag.addGuest(guestID);
+  }
+
+  static removeGuestTagAssociation(guestID, tagID) {
+    console.log("Removing guest tag association", guestID, tagID);
+    const guest = ExpenseTracker.getGuest(guestID);
+    if (!guest) throw new Error("Guest not found");
+    const tag = ExpenseTracker.getTag(tagID);
+    if (!tag) throw new Error("Tag not found");
+    guest.removeTag(tagID);
+    tag.removeGuest(guestID);
   }
 
   /**
@@ -336,7 +368,7 @@ class Guest {
   addTag(id, constructorCall = false) {
     if (this.tags.find((tagID) => tagID === id)) return this;
     this.tags.push(id);
-    if (!constructorCall) ExpenseTracker.getOrCreateTag(id).addGuest(this.id);
+    if (!constructorCall) ExpenseTracker.getOrCreateTag(id)?.addGuest(this.id);
     return this;
   }
 
@@ -351,7 +383,7 @@ class Guest {
     if (this.issuedExpenses.find((expenseID) => expenseID === id)) return this;
     this.issuedExpenses.push(id);
     if (!constructorCall)
-      ExpenseTracker.getOrCreateExpense(id).setIssuer(this.id);
+      ExpenseTracker.getOrCreateExpense(id)?.setIssuer(this.id);
     return this;
   }
 
@@ -403,7 +435,7 @@ class Tag {
 
   removeSelf() {
     for (let expenseID of this.expenses) {
-      ExpenseTracker.getExpense(expenseID)?.setTag(null);
+      ExpenseTracker.getExpense(expenseID)?.removeTag(this.id);
     }
     for (let guestID of this.guests) {
       ExpenseTracker.getGuest(guestID)?.removeTag(this.id);
@@ -416,7 +448,7 @@ class Tag {
   addGuest(id, constructorCall = false) {
     if (this.guests.find((guestID) => guestID === id)) return this;
     this.guests.push(id);
-    if (!constructorCall) ExpenseTracker.getOrCreateGuest(id).addTag(this.id);
+    if (!constructorCall) ExpenseTracker.getOrCreateGuest(id)?.addTag(this.id);
     return this;
   }
 
@@ -430,20 +462,20 @@ class Tag {
   addExpense(id, constructorCall = false) {
     if (this.expenses.find((expenseID) => expenseID === id)) return this;
     this.expenses.push(id);
-    if (!constructorCall) ExpenseTracker.getOrCreateExpense(id).setTag(this.id);
+    if (!constructorCall) ExpenseTracker.getOrCreateExpense(id)?.addTag(this.id);
     return this;
   }
 
   removeExpense(id) {
     if (!this.expenses.find((expenseID) => expenseID === id)) return this;
     this.expenses = this.expenses.filter((expenseID) => expenseID !== id);
-    ExpenseTracker.getExpense(id)?.setTag(null);
+    ExpenseTracker.getExpense(id)?.removeTag(this.id);
     return this;
   }
 
   get totalExpenses() {
     return this.expenses.reduce(
-      (sum, expenseID) => sum + ExpenseTracker.getExpense(expenseID).amount,
+      (sum, expenseID) => sum + ExpenseTracker.getExpense(expenseID)?.amount,
       0
     );
   }
@@ -458,29 +490,31 @@ class Tag {
 }
 
 class Expense {
-  constructor(id, name, amount, issuerID, tagID) {
+  constructor(id, name, amount, issuerID, tagIDs) {
     if (!id) id = ExpenseTracker.createID("expenses");
     if (ExpenseTracker.expenses[id]) throw new Error("ID already exists");
     if (!name) throw new Error("Name is required");
     if (!amount) throw new Error("Amount is required");
     if (!issuerID) throw new Error("Issuer is required");
-    if (!tagID) throw new Error("Tags are required");
+    if (!tagIDs) throw new Error("Tags are required");
 
     if (issuerID !== null) {
       let guest = ExpenseTracker.getOrCreateGuest(issuerID);
       guest.addIssuedExpense(id, true);
     }
 
-    if (tagID !== null) {
-      let tag = ExpenseTracker.getOrCreateTag(tagID);
-      tag.addExpense(id, true);
+    if (tagIDs !== null && tagIDs.length > 0) {
+      for (let tagID of tagIDs) {
+        let tag = ExpenseTracker.getOrCreateTag(tagID);
+        tag.addExpense(id, true);
+      }
     }
 
     this.id = id;
     this.name = name;
     this.ExpenseTracker = ExpenseTracker;
     this.amount = amount;
-    this.tag = tagID;
+    this.tags = tagIDs;
     this.issuer = issuerID;
     return this;
   }
@@ -491,21 +525,25 @@ class Expense {
 
   removeSelf() {
     ExpenseTracker.getGuest(this.issuer)?.removeIssuedExpense(this.id);
-    ExpenseTracker.getTag(this.tag)?.removeExpense(this.id);
+    for (let tag of this.tags)
+      ExpenseTracker.getTag(tag)?.removeExpense(this.id);
     let expenses = { ...ExpenseTracker.expenses };
     delete expenses[this.id];
     ExpenseTracker.expenses = expenses;
   }
 
-  setTag(id, constructorCall = false) {
-    if (this.tag === id) return this;
-    let oldTag = this.tag;
-    this.tag = id;
-    if (id !== null) {
-      if (!constructorCall)
-        ExpenseTracker.getOrCreateTag(id).addExpense(this.id);
-      ExpenseTracker.getTag(oldTag)?.removeExpense(this.id);
-    } else ExpenseTracker.getTag(oldTag)?.removeExpense(this.id);
+  addTag(id, constructorCall = false) {
+    if (!id || this.tags.find((tagID) => tagID === id)) return this;
+    let oldTags = this.tags;
+    this.tags.push(id);
+    if (!constructorCall) ExpenseTracker.getOrCreateTag(id)?.addExpense(this.id);
+    return this;
+  }
+
+  removeTag(id, constructorCall = false) {
+    if (!id || !this.tags.find((tagID) => tagID === id)) return this;
+    this.tags = this.tags.filter((tagID) => tagID !== id);
+    if (!constructorCall) ExpenseTracker.getTag(id)?.removeExpense(this.id);
     return this;
   }
 
@@ -515,7 +553,7 @@ class Expense {
     this.issuer = id;
     if (id !== null) {
       if (!constructorCall)
-        ExpenseTracker.getOrCreateGuest(id).addIssuedExpense(this.id);
+        ExpenseTracker.getOrCreateGuest(id)?.addIssuedExpense(this.id);
       ExpenseTracker.getGuest(oldIssuer)?.removeIssuedExpense(this.id);
     } else ExpenseTracker.getGuest(oldIssuer)?.removeIssuedExpense(this.id);
     return this;
@@ -585,21 +623,21 @@ class ExpenseTrackerTester {
       "expense1",
       10,
       guest1.id,
-      tag1.id
+      [tag1.id]
     );
     const expense2 = ExpenseTracker.createExpense(
       null,
       "expense2",
       20,
       guest2.id,
-      tag2.id
+      [tag2.id]
     );
     const expense3 = ExpenseTracker.createExpense(
       null,
       "expense3",
       30,
       guest3.id,
-      tag1.id
+      [tag1.id]
     );
     let debts = ExpenseTracker.claculateDebts();
     console.log("Debts: ", debts);
@@ -649,28 +687,28 @@ class ExpenseTrackerTester {
       "expense1",
       10,
       guest1.id,
-      tag1.id
+      [tag1.id]
     );
     const expense2 = ExpenseTracker.createExpense(
       null,
       "expense2",
       20,
       guest2.id,
-      tag2.id
+      [tag2.id]
     );
     const expense3 = ExpenseTracker.createExpense(
       null,
       "expense3",
       30,
       guest3.id,
-      tag3.id
+      [tag3.id]
     );
     const expense4 = ExpenseTracker.createExpense(
       null,
       "expense4",
       40,
       guest4.id,
-      tag1.id
+      [tag1.id]
     );
     let debts = ExpenseTracker.claculateDebts();
     let totalDept = Array.from(Object.values(debts)).reduce(
