@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Expense Tracker is a simple web application that allows you to track your expenses. It is inteded to be used for group expenses, such as a trips or events."
+    />
+    <meta name="author" content="Liphip (Philip Laskowicz)" />
+    <meta name="copyright" content="Philip Laskowicz" />
+    <meta name="robots" content="index, follow" />
+    <meta name="rating" content="safe for kids" />
+    <meta http-equiv="X-UA-Compatiable" content="IE=edge" />
+    <link rel="stylesheet" href="./style.css" />
+    <script type="text/javascript" src="./expenseTracker.js"></script>
+    <script type="text/javascript" src="./index.js" defer></script>
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Expense Tracker" />
+    <meta
+      name="twitter:description"
+      content="Expense Tracker is a simple web application that allows you to track your expenses. It is inteded to be used for group expenses, such as a trips or events."
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://avatars.githubusercontent.com/u/57034143?v=4"
+    />
+    <title>Expense Tracker</title>
+  </head>
+
+  <body>
+    <header>
+      <h1>Expense Tracker</h1>
+    </header>
+    <main>
+      <section>
+        <h2>Expense Tracker</h2>
+        <p>
+          Expense Tracker is a simple web application that allows you to track
+          your expenses. It is inteded to be used for group expenses, such as a
+          trips or events.
+        </p>
+        <p>
+          Expense Tracker is open source and available on
+          <a href="https://github.com/Liphip/expense_tracker">GitHub</a>.
+        </p>
+
+        <h3>How to use</h3>
+        <ul>
+          <li>
+            Enter the name of the expense and the amount. Then click the add
+            button. The expense will be added to the table and the total and
+            average will be updated.
+          </li>
+          <li>
+            Click the delete button to remove an expense from the table. The
+            total and average will be updated.
+          </li>
+          <li>
+            Click the clear button to remove all expenses from the table. The
+            total and average will be updated.
+          </li>
+          <li>
+            Click the download button to download a CSV file of the expenses.
+            The CSV file can be opened in a spreadsheet program such as
+            Microsoft Excel or Google Sheets.
+          </li>
+        </ul>
+      </section>
+      <div class="app">
+        <div class="app-item">
+          <form onsubmit="return addGuest();">
+            <h3>Add Guest</h3>
+            <input
+              id="addGuest-name"
+              type="text"
+              placeholder="Name"
+              class="input input-field"
+            />
+            <input type="submit" value="Add" class="input input-button" />
+            <h4 id="addGuest-error" class="error hidden"></h4>
+          </form>
+
+          <hr />
+
+          <form onsubmit="return addTag();">
+            <h3>Add Tag</h3>
+            <input
+              id="addTag-name"
+              type="text"
+              placeholder="Name"
+              class="input input-field"
+            />
+            <input type="submit" value="Add" class="input input-button" />
+            <h4 id="addTag-error" class="error hidden"></h4>
+          </form>
+
+          <hr />
+
+          <form onsubmit="return addExpense();">
+            <h3>Add Expense</h3>
+            <input
+              id="addExpense-name"
+              type="text"
+              placeholder="Name"
+              class="input input-field"
+            />
+            <input
+              id="addExpense-amount"
+              type="number"
+              placeholder="Amount"
+              class="input input-field"
+            />
+            <span class="dropdown">
+              <button
+                class="input input-button"
+                onclick="return toggleExpenseTagsDropdown();"
+              >
+                Select Tags
+              </button>
+              <div id="addExpense-tags" class="dropdown-content hidden">
+                <label for="addExpense-noTag" class="dropdown-item forbidden">
+                  <input
+                    type="checkbox"
+                    id="addExpense-noTag"
+                    disabled
+                    value="noTag"
+                    class="addExpense-tags"
+                  />
+                  No Tags added
+                </label>
+              </div>
+            </span>
+            <span class="dropdown">
+              <button
+                class="input input-button"
+                onclick="return toggleExpenseGuestsDropdown();"
+              >
+                Select Guest
+              </button>
+              <div id="addExpense-guests" class="dropdown-content hidden">
+                <label
+                  for="addExpense-noGuests"
+                  class="dropdown-item forbidden"
+                >
+                  <input
+                    type="radio"
+                    id="addExpense-noGuests"
+                    disabled
+                    value="noGuest"
+                    class="addExpense-issuer"
+                  />
+                  No Guest added
+                </label>
+              </div>
+            </span>
+            <input type="submit" value="Add" class="input input-button" />
+            <h4 id="addExpense-error" class="error hidden"></h4>
+          </form>
+
+          <hr />
+
+          <h3>Options</h3>
+          <div>
+            <button class="input input-button input-inline">Clear All</button>
+            <button class="input input-button input-inline forbidden" disabled>Download CSV</button>
+          </div>
+        </div>
+
+        <div class="app-item">
+          <h2>Overview</h2>
+          <div>
+            <h3>Total Expense</h3>
+            <p id="totalExpensesOverview">0.00$</p>
+          </div>
+          <div>
+            <h3>Average per Guest</h3>
+            <p id="averagePerGuestOverview">0.00$</p>
+          </div>
+        </div>
+
+        <div class="app-item">
+          <h2>Guests</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Tags</th>
+                <th>Expenses</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="guests-table">
+              <tr>
+                <td colspan="4">No Guests</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="app-item">
+          <h2>Tags</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Guests</th>
+                <th>Expenses</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tags-table">
+              <tr>
+                <td colspan="4">No expenses</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="app-item">
+          <h2>Expenses</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Guest</th>
+                <th>Tag</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="expenses-table">
+              <tr>
+                <td colspan="5">No expenses</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="app-item">
+          <h2>Transactions</h2>
+          <table id="Transactions-table">
+            <thead>
+              <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-table">
+              <tr>
+                <td colspan="3">No data</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <nav>
+        <ul>
+          <li><a href="about">About</a></li>
+          <li>
+            Created by <a href="https://github.com/Liphip">Philip Laskowicz</a>
+          </li>
+          <li>
+            <button onclick="return toggleDarkMode();">Dark Mode</button>
+          </li>
+        </ul>
+      </nav>
+    </footer>
+  </body>
+</html>
