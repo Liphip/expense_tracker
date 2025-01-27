@@ -9,6 +9,38 @@ if (
   document.body.classList.add("light");
 }
 
+// Load settings from localStorage
+function loadSettings() {
+  const darkMode = localStorage.getItem("darkMode");
+  if (darkMode === "true") {
+    document.body.classList.add("dark");
+    document.body.classList.remove("light");
+  } else {
+    document.body.classList.remove("dark");
+    document.body.classList.add("light");
+  }
+}
+
+// Save settings to localStorage
+function saveSettings() {
+  const isDarkMode = document.body.classList.contains("dark");
+  localStorage.setItem("darkMode", isDarkMode);
+}
+
+// Save ExpenseTracker state to localStorage
+function saveExpenseTrackerState() {
+  const state = ExpenseTracker.encode();
+  localStorage.setItem("expenseTrackerState", state);
+}
+
+// Load ExpenseTracker state from localStorage
+function loadExpenseTrackerState() {
+  const state = localStorage.getItem("expenseTrackerState");
+  if (state) {
+    ExpenseTracker.decode(state);
+  }
+}
+
 function toggleExpenseTagsDropdown(toggle = undefined) {
   let isHidden = document
     .getElementById("addExpense-tags")
@@ -54,9 +86,11 @@ function toggleExpenseGuestsDropdown(toggle = undefined) {
   return false;
 }
 
+// Modify toggleDarkMode to save settings
 function toggleDarkMode() {
   document.body.classList.toggle("dark");
   document.body.classList.toggle("light");
+  saveSettings();
   return false;
 }
 
@@ -78,6 +112,7 @@ function addGuest() {
   ExpenseTracker.createGuest(null, name);
   document.getElementById("addGuest-name").value = "";
   updateApp();
+  saveExpenseTrackerState();
   return false;
 }
 
@@ -85,8 +120,8 @@ function removeGuest(id = undefined, name = undefined) {
   if (id === undefined && name === undefined) return false;
   if (id === undefined) id = ExpenseTracker.getGuestByName(name).id;
   ExpenseTracker.deleteGuest(id);
-  console.log(ExpenseTracker.format());
   updateApp();
+  saveExpenseTrackerState();
   return false;
 }
 
@@ -109,6 +144,7 @@ function addTag() {
   ExpenseTracker.createTag(null, name);
   document.getElementById("addTag-name").value = "";
   updateApp();
+  saveExpenseTrackerState();
   return false;
 }
 
@@ -116,8 +152,8 @@ function removeTag(id = undefined, name = undefined) {
   if (id === undefined && name === undefined) return false;
   if (id === undefined) id = ExpenseTracker.getTagByName(name).id;
   ExpenseTracker.deleteTag(id);
-  console.log(ExpenseTracker.format());
   updateApp();
+  saveExpenseTrackerState();
   return false;
 }
 
@@ -172,6 +208,7 @@ function addExpense() {
     (e) => (e[0].checked = false)
   );
   updateApp();
+  saveExpenseTrackerState();
   return false;
 }
 
@@ -179,8 +216,8 @@ function removeExpense(id = undefined, name = undefined) {
   if (id === undefined && name === undefined) return false;
   if (id === undefined) id = ExpenseTracker.getExpenseByName(name).id;
   ExpenseTracker.deleteExpense(id);
-  console.log(ExpenseTracker.format());
   updateApp();
+  saveExpenseTrackerState();
   return false;
 }
 
@@ -188,6 +225,7 @@ function addGuestTag(guestId, tagId) {
   if (!guestId || !tagId) return false;
   ExpenseTracker.addGuestTagAssociation(guestId, tagId);
   updateApp();
+  saveExpenseTrackerState();
   return false;
 }
 
@@ -195,6 +233,7 @@ function removeGuestTag(guestId, tagId) {
   if (!guestId || !tagId) return false;
   ExpenseTracker.removeGuestTagAssociation(guestId, tagId);
   updateApp();
+  saveExpenseTrackerState();
   return false;
 }
 
@@ -372,7 +411,7 @@ function updateGuestsTable() {
   let guestList = document.getElementById("guests-table");
   guestList.innerHTML =
     guests.length === 0
-      ? '<tr><td colspan="4">No guests</td></tr>'
+      ? '<tr><td colspan="5">No guests</td></tr>'
       : guests.map(guestsTableEntry).join("");
 }
 
@@ -430,7 +469,7 @@ function updateTagsTable() {
   let tagList = document.getElementById("tags-table");
   tagList.innerHTML =
     tags.length === 0
-      ? '<tr><td colspan="4">No tags</td></tr>'
+      ? '<tr><td colspan="5">No tags</td></tr>'
       : tags.map(tagsTableEntry).join("");
 }
 
@@ -490,6 +529,113 @@ function updateTransactionsTable() {
         .join("");
 }
 
+function clearAll() {
+  clearExpenses(true);
+  clearTags(true);
+  clearGuests(true);
+  updateApp();
+  saveExpenseTrackerState();
+  return false;
+}
+
+function clearTags(clearAll = false) {
+  let tags = ExpenseTracker.allTags;
+  for (let tag of tags) ExpenseTracker.deleteTag(tag.id);
+  if (!clearAll) {
+    updateApp();
+    saveExpenseTrackerState();
+  }
+  return false;
+}
+
+function clearGuests(clearAll = false) {
+  let guests = ExpenseTracker.allGuests;
+  for (let guest of guests) ExpenseTracker.deleteGuest(guest.id);
+  if (!clearAll) {
+    updateApp();
+    saveExpenseTrackerState();
+  }
+  return false;
+}
+
+function clearExpenses(clearAll = false) {
+  let expenses = ExpenseTracker.allExpenses;
+  for (let expense of expenses) ExpenseTracker.deleteExpense(expense.id);
+  if (!clearAll) {
+    updateApp();
+    saveExpenseTrackerState();
+  }
+  return false;
+}
+
+function downloadJSON() {
+  const state = ExpenseTracker.encode();
+  const blob = new Blob([state], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "expense_tracker_state.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  return false;
+}
+
+function handleFileSelect(event) {
+  event.preventDefault();
+  const fileInput = document.getElementById("fileInput");
+  const file = fileInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const state = e.target.result;
+      ExpenseTracker.decode(state);
+      updateApp();
+      saveExpenseTrackerState();
+    };
+    reader.readAsText(file);
+  }
+}
+
+function downloadTransactions() {
+  const transactions = ExpenseTracker.clauclateBestDebtDistribution();
+  let csvContent = "data:text/csv;charset=utf-8,From,To,Amount\n";
+
+  Object.keys(transactions).forEach((fromGuestId) => {
+    transactions[fromGuestId].forEach((transaction) => {
+      const toGuestId = transaction[0];
+      const amount = transaction[1].toFixed(2);
+      const fromGuestName = ExpenseTracker.getGuest(fromGuestId).name;
+      const toGuestName = ExpenseTracker.getGuest(toGuestId).name;
+      csvContent += `${fromGuestName},${toGuestName},${amount}\n`;
+    });
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "transactions.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  return false;
+}
+
+function downloadTransactionsGraph() {
+  const svgContent = ExpenseTracker.transactionsGraphSVG;
+  const blob = new Blob([svgContent], { type: "image/svg+xml" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "transactions_graph.svg";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  return false;
+}
+
 document.addEventListener("click", function (event) {
   const tagsDropdown = document.getElementById("addExpense-tags");
   const guestsDropdown = document.getElementById("addExpense-guests");
@@ -507,4 +653,11 @@ document.addEventListener("click", function (event) {
   ) {
     guestsDropdown.classList.add("hidden");
   }
+});
+
+// Call loadSettings and loadExpenseTrackerState on page load
+document.addEventListener("DOMContentLoaded", () => {
+  loadSettings();
+  loadExpenseTrackerState();
+  updateApp();
 });

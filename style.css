@@ -1,6 +1,8 @@
+/* Base Styles */
 html {
   font-family: sans-serif;
   -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   /* CSS Variables */
   --primary-color-var: #ecf0f1;
@@ -15,32 +17,14 @@ html {
   --error-color: var(--error-color-var);
 }
 
-/*
-@media (prefers-color-scheme: dark) {
-    html {
-        --primary-color: var(--secondary-color-var);
-        --secondary-color: var(--primary-color-var);
-        --tertiary-color: var(--tertiary-color-var);
-        --quaternary-color: var(--quaternary-color-var);
-    }
-}
-
-@media (prefers-color-scheme: light) {
-    html {
-        --primary-color: var(--primary-color-var);
-        --secondary-color: var(--secondary-color-var);
-        --tertiary-color: var(--tertiary-color-var);
-        --quaternary-color: var(--quaternary-color-var);
-    }
-}
-*/
-
 body {
   margin: 0;
   background-color: var(--primary-color);
   color: var(--secondary-color);
+  transition: background-color 0.3s, color 0.3s;
 }
 
+/* Dark and Light Mode */
 body.dark {
   --primary-color: var(--secondary-color-var);
   --secondary-color: var(--primary-color-var);
@@ -55,6 +39,7 @@ body.light {
   --quaternary-color: var(--quaternary-color-var);
 }
 
+/* Layout Elements */
 header,
 nav,
 section,
@@ -63,83 +48,87 @@ footer {
   display: block;
 }
 
-header {
+.header {
   position: fixed;
   top: 0;
   width: 100%;
   background-color: var(--quaternary-color);
   color: var(--primary-color);
   padding: 1em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
-header h1 {
+.header-title {
   margin: 0;
 }
 
-footer {
+.footer {
   position: fixed;
   bottom: 0;
   width: 100%;
   background-color: var(--quaternary-color);
   color: var(--primary-color);
   padding: 1em;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
-footer nav ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.footer-nav {
   text-align: center;
 }
 
-footer nav li {
+.footer-nav-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-nav-item {
   display: inline-block;
   margin: 0 0.5em;
 }
 
-footer nav a {
+.footer-nav a {
   color: var(--primary-color);
   text-decoration: none;
 }
 
-footer nav a:hover {
+.footer-nav a:hover {
   text-decoration: underline;
 }
 
-main {
-  padding-top: 4em;
-  padding-bottom: 4em;
+.main-content {
+  padding-top: 5em;
+  padding-bottom: 5em;
   padding-left: 1em;
   padding-right: 1em;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-main a {
+.main-content a {
   color: var(--tertiary-color);
 }
 
-main section {
+.intro-section {
   padding: 1em;
 }
 
-main section h2 {
+.section-title {
   margin-top: 0;
 }
 
-main section p {
-  margin-top: 0;
-}
-
-main section ul {
-  margin-top: 0;
-  padding-left: 1em;
-}
-
-main section li {
+.section-description,
+.usage-list,
+.usage-item,
+.features-list,
+.feature-item {
   margin-top: 0;
 }
 
 /* Horizontal Splitter Line */
-hr {
+.divider {
   display: block;
   height: 0;
   border: 0;
@@ -148,10 +137,17 @@ hr {
   padding: 0;
 }
 
+/* App Layout */
 .app {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   grid-gap: 1em;
+}
+
+@media (min-width: 768px) {
+  .app {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .app-item {
@@ -160,51 +156,53 @@ hr {
   border-radius: 0.5em;
 }
 
-.app h2 {
-  margin-top: 0;
-}
-
+.app h2,
 .app h3 {
   margin-top: 0;
 }
 
-table {
+/* Table Styles */
+.table {
   width: 100%;
   border-spacing: 0;
   border: 1px solid var(--primary-color);
   padding: 1em;
   color: var(--primary-color);
+  border-radius: 0.25em;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-table th {
+.table th {
   text-align: left;
   background-color: var(--quaternary-color);
+  padding: 0.5em;
 }
 
-table td {
+.table td {
   text-align: left;
+  padding: 0.5em;
 }
 
-table td:last-child:not(:first-child) {
+.table td:last-child:not(:first-child) {
   text-align: right;
 }
 
-table tr:nth-child(odd) {
+.table tr:nth-child(odd) {
   background-color: var(--secondary-color);
 }
 
-table tr:nth-child(even) {
+.table tr:nth-child(even) {
   background-color: var(--quaternary-color);
 }
 
-table tr:hover {
+.table tr:hover {
   background-color: var(--tertiary-color);
-}
-
-table tr:hover td {
   color: var(--secondary-color);
+  transition: background-color 0.3s, color 0.3s;
 }
 
+/* Tag-Guest Association Table */
 #tagGuestAssociation-table {
   width: 100%;
   border-spacing: 0;
@@ -255,6 +253,7 @@ table tr:hover td {
   border-color: var(--quaternary-color);
 }
 
+/* Input Styles */
 .input {
   margin-bottom: 1em;
   display: flex;
@@ -272,16 +271,28 @@ table tr:hover td {
 }
 
 .input-button {
-    width: max-content;
-    height: fit-content;
-    cursor: pointer;
+  width: max-content;
+  height: fit-content;
+  cursor: pointer;
+  background-color: var(--tertiary-color);
+  color: var(--primary-color);
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 0.25em;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.input-button:hover {
+  background-color: var(--quaternary-color);
+  color: var(--secondary-color);
 }
 
 .input-inline {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
+/* Dropdown Styles */
 .dropdown {
   position: relative;
   display: inline-block;
@@ -317,6 +328,7 @@ table tr:hover td {
 
 .hidden {
   display: none;
+  transition: display 0.3s;
 }
 
 .dropdown-item {
@@ -347,6 +359,7 @@ table tr:hover td {
   aspect-ratio: 1;
 }
 
+/* Error Styles */
 .error {
   color: var(--error-color);
   font-style: italic;
@@ -354,4 +367,61 @@ table tr:hover td {
 
 .forbidden {
   cursor: not-allowed;
+}
+
+/* New Styles for Improved Structure */
+.section-subtitle {
+  margin-top: 1em;
+  font-size: 1.25em;
+  color: var(--tertiary-color);
+}
+
+.usage-list,
+.features-list {
+  list-style-type: disc;
+  padding-left: 1.5em;
+}
+
+.usage-item,
+.feature-item {
+  margin-bottom: 0.5em;
+}
+
+.overview-item {
+  margin-bottom: 1em;
+}
+
+.overview-title {
+  font-size: 1.1em;
+  color: var(--tertiary-color);
+}
+
+.overview-value {
+  font-size: 1.25em;
+  font-weight: bold;
+}
+
+.transactions-options {
+  margin-bottom: 1em;
+}
+
+.form-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+/* Styling for file input */
+#fileInput {
+  display: none;
+}
+
+.file-input-label {
+  cursor: pointer;
+  color: var(--tertiary-color);
+  text-decoration: underline;
+}
+
+.file-input-label:hover {
+  color: var(--quaternary-color);
 }

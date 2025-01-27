@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Expense Tracker is a simple web application that allows you to track your expenses. It is inteded to be used for group expenses, such as a trips or events."
+      content="Expense Tracker is a comprehensive web application designed to help you manage and track group expenses efficiently. Perfect for trips, events, and shared activities, it offers features like adding expenses, guests, and tags, and provides detailed overviews and downloadable reports."
     />
     <meta name="author" content="Liphip (Philip Laskowicz)" />
     <meta name="copyright" content="Philip Laskowicz" />
@@ -19,7 +19,7 @@
     <meta name="twitter:title" content="Expense Tracker" />
     <meta
       name="twitter:description"
-      content="Expense Tracker is a simple web application that allows you to track your expenses. It is inteded to be used for group expenses, such as a trips or events."
+      content="Expense Tracker is a comprehensive web application designed to help you manage and track group expenses efficiently. Perfect for trips, events, and shared activities, it offers features like adding expenses, guests, and tags, and provides detailed overviews and downloadable reports."
     />
     <link
       rel="icon"
@@ -33,7 +33,7 @@
     <meta property="og:title" content="Expense Tracker" />
     <meta
       property="og:description"
-      content="Track your group expenses easily with Expense Tracker."
+      content="Manage and track your group expenses effortlessly with Expense Tracker. Add expenses, guests, and tags, and get detailed overviews and downloadable reports."
     />
     <meta property="og:type" content="website" />
     <meta
@@ -63,7 +63,7 @@
           "@type": "Person",
           "name": "Philip Laskowicz"
         },
-        "description": "Expense Tracker is a simple web application that allows you to track your expenses. It is intended to be used for group expenses, such as trips or events.",
+        "description": "Expense Tracker is a comprehensive web application designed to help you manage and track group expenses efficiently. Perfect for trips, events, and shared activities, it offers features like adding expenses, guests, and tags, and provides detailed overviews and downloadable reports.",
         "applicationCategory": "FinanceApplication",
         "operatingSystem": "Web",
         "image": "https://avatars.githubusercontent.com/u/57034143?v=4"
@@ -72,48 +72,100 @@
   </head>
 
   <body>
-    <header>
-      <h1>Expense Tracker</h1>
+    <header class="header">
+      <h1 class="header-title">Expense Tracker</h1>
     </header>
-    <main>
-      <section>
-        <h2>Expense Tracker</h2>
-        <p>
-          Expense Tracker is a simple web application that allows you to track
-          your expenses. It is inteded to be used for group expenses, such as a
-          trips or events.
+    <main class="main-content">
+      <section class="intro-section">
+        <h2 class="section-title">Welcome to Expense Tracker</h2>
+        <p class="section-description">
+          Expense Tracker is a comprehensive web application designed to help
+          you manage and track your expenses efficiently. It is ideal for group
+          expenses, such as trips, events, and shared activities. With features
+          like adding expenses, guests, and tags, and providing detailed
+          overviews and downloadable reports, it simplifies expense management.
         </p>
-        <p>
+        <p class="section-description">
           Expense Tracker is open source and available on
           <a href="https://github.com/Liphip/expense_tracker">GitHub</a>.
         </p>
 
-        <h3>How to use</h3>
-        <ul>
-          <li>
-            Enter the name of the expense and the amount. Then click the add
-            button. The expense will be added to the table and the total and
-            average will be updated.
+        <h3 class="section-subtitle">How to Use Expense Tracker</h3>
+        <ul class="usage-list">
+          <li class="usage-item">
+            <strong>Add Expense:</strong> Enter the name of the expense and the
+            amount, then click the add button. The expense will be added to the
+            table, and the total and average will be updated.
           </li>
-          <li>
-            Click the delete button to remove an expense from the table. The
-            total and average will be updated.
+          <li class="usage-item">
+            <strong>Delete Expense:</strong> Click the delete button to remove
+            an expense from the table. The total and average will be updated
+            accordingly.
           </li>
-          <li>
-            Click the clear button to remove all expenses from the table. The
-            total and average will be updated.
+          <li class="usage-item">
+            <strong>Clear All Expenses:</strong> Click the clear button to
+            remove all expenses from the table. The total and average will be
+            reset.
           </li>
-          <li>
-            Click the download button to download a CSV file of the expenses.
-            The CSV file can be opened in a spreadsheet program such as
-            Microsoft Excel or Google Sheets.
+          <li class="usage-item">
+            <strong>Download CSV:</strong> Click the download button to download
+            a CSV file of the expenses. The CSV file can be opened in
+            spreadsheet programs such as Microsoft Excel or Google Sheets.
+          </li>
+          <li class="usage-item">
+            <strong>Save and Load Data:</strong> Use the options to save your
+            data to a file or load data from a file, ensuring your expense
+            records are always up-to-date and accessible.
+          </li>
+          <li class="usage-item">
+            <strong>Add Guests and Tags:</strong> Add guests and tags to
+            categorize your expenses and get detailed insights into your
+            spending patterns.
+          </li>
+          <li class="usage-item">
+            <strong>View Overview:</strong> View the total expenses, average
+            expenses per guest, and average expenses per tag in the overview
+            section.
+          </li>
+          <li class="usage-item">
+            <strong>Manage Guests and Tags:</strong> Manage your guests and tags
+            efficiently by adding, clearing, and associating them with expenses.
+          </li>
+        </ul>
+
+        <h3 class="section-subtitle">Features of Expense Tracker</h3>
+        <ul class="features-list">
+          <li class="feature-item">
+            Easy expense tracking for groups, trips, events, and shared
+            activities.
+          </li>
+          <li class="feature-item">
+            Add and manage guests and tags for better categorization.
+          </li>
+          <li class="feature-item">
+            Detailed overview of total expenses, average expenses per guest, and
+            average expenses per tag.
+          </li>
+          <li class="feature-item">
+            Downloadable reports in CSV format for easy sharing and analysis.
+          </li>
+          <li class="feature-item">
+            Save and load expense data to and from files for persistent
+            record-keeping.
+          </li>
+          <li class="feature-item">
+            Clear and intuitive user interface for seamless expense management.
+          </li>
+          <li class="feature-item">
+            Open source and available on GitHub for community contributions and
+            improvements.
           </li>
         </ul>
       </section>
       <div class="app">
         <div class="app-item">
-          <form onsubmit="return addGuest();">
-            <h3>Add Guest</h3>
+          <form onsubmit="return addGuest();" class="form">
+            <h3 class="form-title">Add Guest</h3>
             <input
               id="addGuest-name"
               type="text"
@@ -124,10 +176,10 @@
             <h4 id="addGuest-error" class="error hidden"></h4>
           </form>
 
-          <hr />
+          <hr class="divider" />
 
-          <form onsubmit="return addTag();">
-            <h3>Add Tag</h3>
+          <form onsubmit="return addTag();" class="form">
+            <h3 class="form-title">Add Tag</h3>
             <input
               id="addTag-name"
               type="text"
@@ -138,10 +190,10 @@
             <h4 id="addTag-error" class="error hidden"></h4>
           </form>
 
-          <hr />
+          <hr class="divider" />
 
-          <form onsubmit="return addExpense();">
-            <h3>Add Expense</h3>
+          <form onsubmit="return addExpense();" class="form">
+            <h3 class="form-title">Add Expense</h3>
             <input
               id="addExpense-name"
               type="text"
@@ -201,34 +253,55 @@
             <h4 id="addExpense-error" class="error hidden"></h4>
           </form>
 
-          <hr />
+          <hr class="divider" />
 
-          <h3>Options</h3>
-          <div>
-            <button class="input input-button input-inline">Clear All</button>
-            <button class="input input-button input-inline forbidden" disabled>
-              Download CSV
+          <h3 class="form-title">Options</h3>
+          <div class="options">
+            <button
+              class="input input-button input-inline"
+              onclick="return clearAll();"
+            >
+              Clear All
             </button>
+            <button
+              class="input input-button input-inline"
+              onclick="return downloadJSON();"
+            >
+              Save to file
+            </button>
+            <form
+              onsubmit="return handleFileSelect(event);"
+              class="form-inline"
+            >
+              <label for="fileInput" class="file-input-label">Load from file</label>
+              <input
+                type="file"
+                id="fileInput"
+                accept=".json"
+                title="Load from file"
+              />
+              <input type="submit" value="Load" class="input input-button" />
+            </form>
           </div>
         </div>
 
         <div class="app-item">
-          <h2>Overview</h2>
-          <div>
-            <h3>Total Expense</h3>
-            <p id="totalExpensesOverview">0.00$</p>
+          <h2 class="section-title">Overview</h2>
+          <div class="overview-item">
+            <h3 class="overview-title">Total Expense</h3>
+            <p id="totalExpensesOverview" class="overview-value">0.00$</p>
           </div>
-          <div>
-            <h3>Average per Guest</h3>
-            <p id="averagePerGuestOverview">0.00$</p>
+          <div class="overview-item">
+            <h3 class="overview-title">Average per Guest</h3>
+            <p id="averagePerGuestOverview" class="overview-value">0.00$</p>
           </div>
-          <div>
-            <h3>Average per Tag</h3>
-            <p id="averagePerTagOverview">0.00$</p>
+          <div class="overview-item">
+            <h3 class="overview-title">Average per Tag</h3>
+            <p id="averagePerTagOverview" class="overview-value">0.00$</p>
           </div>
-          <div>
-            <h3>Tag - Guest Association</h3>
-            <table id="tagGuestAssociation-table">
+          <div class="overview-item">
+            <h3 class="overview-title">Tag - Guest Association</h3>
+            <table id="tagGuestAssociation-table" class="table">
               <tr>
                 <td colspan="1">Add at least one guest and one tag</td>
               </tr>
@@ -237,8 +310,14 @@
         </div>
 
         <div class="app-item">
-          <h2>Guests</h2>
-          <table>
+          <h2 class="section-title">Guests</h2>
+          <button
+            class="input input-button input-inline"
+            onclick="return clearGuests();"
+          >
+            Clear Guests
+          </button>
+          <table class="table">
             <thead>
               <tr>
                 <th>Name</th>
@@ -257,8 +336,14 @@
         </div>
 
         <div class="app-item">
-          <h2>Tags</h2>
-          <table>
+          <h2 class="section-title">Tags</h2>
+          <button
+            class="input input-button input-inline"
+            onclick="return clearTags();"
+          >
+            Clear Tags
+          </button>
+          <table class="table">
             <thead>
               <tr>
                 <th>Name</th>
@@ -277,8 +362,14 @@
         </div>
 
         <div class="app-item">
-          <h2>Expenses</h2>
-          <table>
+          <h2 class="section-title">Expenses</h2>
+          <button
+            class="input input-button input-inline"
+            onclick="return clearExpenses();"
+          >
+            Clear Expenses
+          </button>
+          <table class="table">
             <thead>
               <tr>
                 <th>Name</th>
@@ -297,8 +388,23 @@
         </div>
 
         <div class="app-item">
-          <h2>Transactions</h2>
-          <table id="Transactions-table">
+          <h2 class="section-title">Transactions</h2>
+          <div class="transactions-options">
+            <button
+              class="input input-button input-inline"
+              onclick="return downloadTransactions();"
+            >
+              Download Transactions as CSV
+            </button>
+            <button
+              class="input input-button input-inline forbidden"
+              onclick="/*return downloadTransactionsGraph();*/"
+              disabled
+            >
+              Download Transactions as Graph
+            </button>
+          </div>
+          <table id="Transactions-table" class="table">
             <thead>
               <tr>
                 <th>From</th>
@@ -316,15 +422,30 @@
       </div>
     </main>
 
-    <footer>
-      <nav>
-        <ul>
-          <li><a href="about">About</a></li>
-          <li>
+    <footer class="footer">
+      <nav class="footer-nav">
+        <ul class="footer-nav-list">
+          <li class="footer-nav-item">
             Created by <a href="https://github.com/Liphip">Philip Laskowicz</a>
           </li>
+          <li class="footer-nav-item">
+            <button
+              class="input input-button input-inline"
+              onclick="return toggleDarkMode();"
+            >
+              Dark Mode
+            </button>
+          </li>
+          <li class="footer-nav-item">
+            <a href="https://github.com/Liphip/expense_tracker/issues/new"
+              >Report an Issue</a
+            >
+          </li>
           <li>
-            <button onclick="return toggleDarkMode();">Dark Mode</button>
+            <a href="https://github.com/Liphip/expense_tracker/issues/new">Report an Issue</a>
+          </li>
+          <li>
+            <a href="https://github.com/Liphip/expense_tracker/issues/new">Report an Issue</a>
           </li>
           <li>
             <a href="https://github.com/Liphip/expense_tracker/issues/new">Report an Issue</a>
