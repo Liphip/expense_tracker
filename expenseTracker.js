@@ -30,6 +30,103 @@ class ExpenseTracker {
     };
   }
 
+  static encode() {
+    return JSON.stringify(ExpenseTracker.format());
+  }
+
+  static decode(data) {
+    const { tags, expenses, guests } = JSON.parse(data);
+    for (let tag of Object.values(tags)) {
+      ExpenseTracker.createTag(tag.id, tag.name);
+    }
+    for (let guest of Object.values(guests)) {
+      ExpenseTracker.createGuest(guest.id, guest.name, guest.tags);
+    }
+    for (let expense of Object.values(expenses)) {
+      ExpenseTracker.createExpense(
+        expense.id,
+        expense.name,
+        expense.amount,
+        expense.issuer,
+        expense.tags
+      );
+    }
+  }
+
+  static get transactionsCSV() {
+    const transactions = ExpenseTracker.clauclateBestDebtDistribution();
+    let csv = "From,To,Amount\n";
+    for (let fromGuestID of Object.keys(transactions)) {
+      for (let transaction of transactions[fromGuestID]) {
+        csv += `${ExpenseTracker.getGuest(fromGuestID).name},${
+          ExpenseTracker.getGuest(transaction[0]).name
+        },${transaction[1]}\n`;
+      }
+    }
+    return csv;
+  }
+
+  static get transactionsGraphSVG() {
+    const transactions = ExpenseTracker.clauclateBestDebtDistribution();
+    const debts = ExpenseTracker.claculateDebts();
+    const guests = ExpenseTracker.allGuests;
+    const guestNames = guests.map((guest) => guest.name);
+    const guestDebts = guests.map((guest) => debts[guest.id]);
+    const guestTransactions = guests.map((guest) => {
+      const transactionsTo = transactions[guest.id].map((transaction) => {
+        return { to: transaction[0], amount: transaction[1] };
+      });
+      return { name: guest.name, transactions: transactionsTo };
+    });
+
+    const svg = `
+    <svg width="1000" height="1000" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="1000" height="1000" fill="white"/>
+      <text x="500" y="50" font-size="30" text-anchor="middle">Debts</text>
+      <text x="50" y="500" font-size="30" transform="rotate(270 50,500)" text-anchor="middle">Guests</text>
+      <text x="50" y="50" font-size="20">0</text>
+      <text x="50" y="950" font-size="20">${Math.max(...guestDebts)}</text>
+      <text x="950" y="50" font-size="20">0</text>
+      <text x="950" y="950" font-size="20">${Math.max(...guestDebts)}</text>
+      ${guestNames
+        .map((name, i) => {
+          return `<text x="50" y="${
+            100 + i * 50
+          }" font-size="20">${name}</text>`;
+        })
+        .join("\n")}
+      ${guestNames
+        .map((name, i) => {
+          return `<text x="950" y="${
+            100 + i * 50
+          }" font-size="20">${name}</text>`;
+        })
+        .join("\n")}
+      ${guestDebts
+        .map((debt, i) => {
+          return `<rect x="100" y="${100 + i * 50}" width="${
+            debt * 10
+          }" height="20" fill="red"/>`;
+        })
+        .join("\n")}
+      ${guestTransactions
+        .map((guest, i) => {
+          return guest.transactions
+            .map((transaction) => {
+              const toIndex = guestNames.indexOf(
+                ExpenseTracker.getGuest(transaction.to).name
+              );
+              return `<line x1="100" y1="${110 + i * 50}" x2="900" y2="${
+                110 + toIndex * 50
+              }" stroke="black" stroke-width="2"/>`;
+            })
+            .join("\n");
+        })
+        .join("\n")}
+    </svg>`;
+    return svg;
+  }
+
   static toString() {
     return `ExpenseTracker: ${ExpenseTracker.totalTags} tags, ${ExpenseTracker.totalExpenses} expenses, ${ExpenseTracker.totalGuests} guests`;
   }
@@ -208,7 +305,6 @@ class ExpenseTracker {
   }
 
   static addGuestTagAssociation(guestID, tagID) {
-    console.log("Adding guest tag association", guestID, tagID);
     const guest = ExpenseTracker.getGuest(guestID);
     if (!guest) throw new Error("Guest not found");
     const tag = ExpenseTracker.getTag(tagID);
@@ -218,7 +314,6 @@ class ExpenseTracker {
   }
 
   static removeGuestTagAssociation(guestID, tagID) {
-    console.log("Removing guest tag association", guestID, tagID);
     const guest = ExpenseTracker.getGuest(guestID);
     if (!guest) throw new Error("Guest not found");
     const tag = ExpenseTracker.getTag(tagID);
@@ -275,7 +370,6 @@ class ExpenseTracker {
     for (let guest of ExpenseTracker.allGuests) {
       if (debts[guest.id] > 0) {
         const sortedDebts = Object.entries(debts).sort((a, b) => b[1] - a[1]);
-        console.log(sortedDebts);
         let i = 0;
         let amount = debts[guest.id];
         while (amount > 0 && i < sortedDebts.length) {
@@ -462,7 +556,8 @@ class Tag {
   addExpense(id, constructorCall = false) {
     if (this.expenses.find((expenseID) => expenseID === id)) return this;
     this.expenses.push(id);
-    if (!constructorCall) ExpenseTracker.getOrCreateExpense(id)?.addTag(this.id);
+    if (!constructorCall)
+      ExpenseTracker.getOrCreateExpense(id)?.addTag(this.id);
     return this;
   }
 
@@ -536,7 +631,8 @@ class Expense {
     if (!id || this.tags.find((tagID) => tagID === id)) return this;
     let oldTags = this.tags;
     this.tags.push(id);
-    if (!constructorCall) ExpenseTracker.getOrCreateTag(id)?.addExpense(this.id);
+    if (!constructorCall)
+      ExpenseTracker.getOrCreateTag(id)?.addExpense(this.id);
     return this;
   }
 
