@@ -14,7 +14,7 @@ class ExpenseTracker {
     return Object.values(ExpenseTracker.tags);
   }
 
-  static get totalTags() {
+  static get tagCount() {
     return ExpenseTracker.allTags.length;
   }
 
@@ -128,7 +128,7 @@ class ExpenseTracker {
   }
 
   static toString() {
-    return `ExpenseTracker: ${ExpenseTracker.totalTags} tags, ${ExpenseTracker.totalExpenses} expenses, ${ExpenseTracker.totalGuests} guests`;
+    return `ExpenseTracker: ${ExpenseTracker.tagCount} tags, ${ExpenseTracker.expenseCount} expenses, ${ExpenseTracker.guestCount} guests`;
   }
 
   static getTag(id) {
@@ -152,6 +152,10 @@ class ExpenseTracker {
     );
   }
 
+  static get expenseCount() {
+    return ExpenseTracker.allExpenses.length;
+  }
+
   static getExpense(id) {
     return ExpenseTracker.expenses[id];
   }
@@ -166,7 +170,7 @@ class ExpenseTracker {
     return Object.values(ExpenseTracker.guests);
   }
 
-  static get totalGuests() {
+  static get guestCount() {
     return ExpenseTracker.allGuests.length;
   }
 
@@ -182,13 +186,6 @@ class ExpenseTracker {
     for (let guest of ExpenseTracker.allGuests) {
       if (guest.name === name) return guest;
     }
-  }
-
-  static get totalExpenses() {
-    return ExpenseTracker.allExpenses.reduce(
-      (sum, expense) => sum + expense.amount,
-      0
-    );
   }
 
   static createID(classType) {
@@ -675,8 +672,74 @@ class ExpenseTrackerTester {
       console.error(e);
     }
     console.groupEnd("Finished complex test");
+    ExpenseTrackerTester.prepare();
+    console.group("Running tag association test");
+    try {
+      ExpenseTrackerTester.testTagAssociation();
+    } catch (e) {
+      console.error(e);
+    }
+    console.groupEnd("Finished tag association test");
+    ExpenseTrackerTester.prepare();
+    console.group("Running guest association test");
+    try {
+      ExpenseTrackerTester.testGuestAssociation();
+    } catch (e) {
+      console.error(e);
+    }
+    console.groupEnd("Finished guest association test");
+    ExpenseTrackerTester.prepare();
+    console.group("Running expense association test");
+    try {
+      ExpenseTrackerTester.testExpenseAssociation();
+    } catch (e) {
+      console.error(e);
+    }
+    console.groupEnd("Finished expense association test");
+    ExpenseTrackerTester.prepare();
+    console.group("Running encode/decode test");
+    try {
+      ExpenseTrackerTester.testEncodeDecode();
+    } catch (e) {
+      console.error(e);
+    }
+    console.groupEnd("Finished encode/decode test");
+    ExpenseTrackerTester.prepare();
+    console.group("Running toString test");
+    try {
+      ExpenseTrackerTester.testToString();
+    } catch (e) {
+      console.error(e);
+    }
+    console.groupEnd("Finished toString test");
+    ExpenseTrackerTester.prepare();
+    console.group("Running get methods test");
+    try {
+      ExpenseTrackerTester.testGetMethods();
+    } catch (e) {
+      console.error(e);
+    }
+    console.groupEnd("Finished get methods test");
+    ExpenseTrackerTester.prepare();
+    console.group("Running createID test");
+    try {
+      ExpenseTrackerTester.testCreateID();
+    } catch (e) {
+      console.error(e);
+    }
+    console.groupEnd("Finished createID test");
+    ExpenseTrackerTester.prepare();
+    console.group("Running getOrCreate methods test");
+    try {
+      ExpenseTrackerTester.testGetOrCreateMethods();
+    } catch (e) {
+      console.error(e);
+    }
+    console.groupEnd("Finished getOrCreate methods test");
     ExpenseTrackerTester.restore(previosState);
     console.groupEnd("Finished all tests");
+
+    ExpenseTrackerTester.checkCoverage();
   }
 
   static prepare() {
@@ -875,5 +938,272 @@ class ExpenseTrackerTester {
       `Expected total debt remaining after all partial depts is ${expectedTotalDept} but should be 0`
     );
     console.log("ExpenseTracker: ", ExpenseTracker.format());
+  }
+
+  static testTagAssociation() {
+    console.log("Testing tag associations");
+    const tag1 = ExpenseTracker.createTag(null, "tag1");
+    const guest1 = ExpenseTracker.createGuest(null, "guest1");
+    ExpenseTracker.addGuestTagAssociation(guest1.id, tag1.id);
+    console.log("Guest tags after association: ", guest1.tags);
+    console.log("Tag guests after association: ", tag1.guests);
+    console.assert(
+      guest1.tags.includes(tag1.id),
+      `Guest ${guest1.id} should have tag ${tag1.id}`
+    );
+    console.assert(
+      tag1.guests.includes(guest1.id),
+      `Tag ${tag1.id} should have guest ${guest1.id}`
+    );
+    ExpenseTracker.removeGuestTagAssociation(guest1.id, tag1.id);
+    console.log("Guest tags after disassociation: ", guest1.tags);
+    console.log("Tag guests after disassociation: ", tag1.guests);
+    console.assert(
+      !guest1.tags.includes(tag1.id),
+      `Guest ${guest1.id} should not have tag ${tag1.id}`
+    );
+    console.assert(
+      !tag1.guests.includes(guest1.id),
+      `Tag ${tag1.id} should not have guest ${guest1.id}`
+    );
+  }
+
+  static testGuestAssociation() {
+    console.log("Testing guest associations");
+    const guest1 = ExpenseTracker.createGuest(null, "guest1");
+    const expense1 = ExpenseTracker.createExpense(
+      null,
+      "expense1",
+      10,
+      guest1.id,
+      []
+    );
+    console.log(
+      "Guest issued expenses after association: ",
+      guest1.issuedExpenses
+    );
+    console.log("Expense issuer after association: ", expense1.issuer);
+    console.assert(
+      guest1.issuedExpenses.includes(expense1.id),
+      `Guest ${guest1.id} should have issued expense ${expense1.id}`
+    );
+    console.assert(
+      expense1.issuer === guest1.id,
+      `Expense ${expense1.id} should have issuer ${guest1.id}`
+    );
+    guest1.removeIssuedExpense(expense1.id);
+    console.log(
+      "Guest issued expenses after disassociation: ",
+      guest1.issuedExpenses
+    );
+    console.log("Expense issuer after disassociation: ", expense1.issuer);
+    console.assert(
+      !guest1.issuedExpenses.includes(expense1.id),
+      `Guest ${guest1.id} should not have issued expense ${expense1.id}`
+    );
+    console.assert(
+      expense1.issuer === null,
+      `Expense ${expense1.id} should not have an issuer`
+    );
+  }
+
+  static testExpenseAssociation() {
+    console.log("Testing expense associations");
+    const tag1 = ExpenseTracker.createTag(null, "tag1");
+    const guest1 = ExpenseTracker.createGuest(null, "guest1");
+    const expense1 = ExpenseTracker.createExpense(
+      null,
+      "expense1",
+      10,
+      guest1.id,
+      [tag1.id]
+    );
+    console.log("Expense tags after association: ", expense1.tags);
+    console.log("Tag expenses after association: ", tag1.expenses);
+    console.assert(
+      expense1.tags.includes(tag1.id),
+      `Expense ${expense1.id} should have tag ${tag1.id}`
+    );
+    console.assert(
+      tag1.expenses.includes(expense1.id),
+      `Tag ${tag1.id} should have expense ${expense1.id}`
+    );
+    expense1.removeTag(tag1.id);
+    console.log("Expense tags after disassociation: ", expense1.tags);
+    console.log("Tag expenses after disassociation: ", tag1.expenses);
+    console.assert(
+      !expense1.tags.includes(tag1.id),
+      `Expense ${expense1.id} should not have tag ${tag1.id}`
+    );
+    console.assert(
+      !tag1.expenses.includes(expense1.id),
+      `Tag ${tag1.id} should not have expense ${expense1.id}`
+    );
+  }
+
+  static getTestedMethods() {
+    return [
+      "testBasic",
+      "testComplexDebts",
+      "testTagAssociation",
+      "testGuestAssociation",
+      "testExpenseAssociation",
+      "testEncodeDecode",
+      "testToString",
+      "testGetMethods",
+      "testCreateID",
+      "testGetOrCreateMethods",
+    ].reduce((methods, testMethod) => {
+      const testFunction = ExpenseTrackerTester[testMethod];
+      const methodNames = testFunction
+        .toString()
+        .match(/ExpenseTracker\.(\w+)/g);
+      if (methodNames) {
+        methodNames.forEach((methodName) => {
+          methods.add(methodName.split(".")[1]);
+        });
+      }
+      return methods;
+    }, new Set());
+  }
+
+  static checkCoverage() {
+    const methods = Object.getOwnPropertyNames(ExpenseTracker).filter(
+      (prop) => typeof ExpenseTracker[prop] === "function"
+    );
+    const testedMethods = Array.from(ExpenseTrackerTester.getTestedMethods());
+    const untestedMethods = methods.filter(
+      (method) => !testedMethods.includes(method)
+    );
+
+    console.log("Tested methods: ", testedMethods);
+    console.log("Untested methods: ", untestedMethods);
+    console.assert(
+      untestedMethods.length === 0,
+      `There are untested methods: ${untestedMethods.join(", ")}`
+    );
+  }
+
+  static testEncodeDecode() {
+    console.log("Testing encode and decode");
+    const tag1 = ExpenseTracker.createTag(null, "tag1");
+    const guest1 = ExpenseTracker.createGuest(null, "guest1", [tag1.id]);
+    const expense1 = ExpenseTracker.createExpense(
+      null,
+      "expense1",
+      10,
+      guest1.id,
+      [tag1.id]
+    );
+    const encoded = ExpenseTracker.encode();
+    console.log("Encoded data: ", encoded);
+    ExpenseTrackerTester.prepare();
+    ExpenseTracker.decode(encoded);
+    console.log("Decoded data: ", ExpenseTracker.format());
+    console.assert(
+      ExpenseTracker.getTag(tag1.id).name === "tag1",
+      `Tag ${tag1.id} should be decoded correctly`
+    );
+    console.assert(
+      ExpenseTracker.getGuest(guest1.id).name === "guest1",
+      `Guest ${guest1.id} should be decoded correctly`
+    );
+    console.assert(
+      ExpenseTracker.getExpense(expense1.id).name === "expense1",
+      `Expense ${expense1.id} should be decoded correctly`
+    );
+  }
+
+  static testToString() {
+    console.log("Testing toString");
+    const tag1 = ExpenseTracker.createTag(null, "tag1");
+    const guest1 = ExpenseTracker.createGuest(null, "guest1", [tag1.id]);
+    const expense1 = ExpenseTracker.createExpense(
+      null,
+      "expense1",
+      10,
+      guest1.id,
+      [tag1.id]
+    );
+    const str = ExpenseTracker.toString();
+    console.log("ExpenseTracker toString: ", str);
+    console.assert(
+      str.includes("1 tags") &&
+        str.includes("1 expenses") &&
+        str.includes("1 guests"),
+      `toString should include correct counts`
+    );
+  }
+
+  static testGetMethods() {
+    console.log("Testing get methods");
+    const tag1 = ExpenseTracker.createTag(null, "tag1");
+    const guest1 = ExpenseTracker.createGuest(null, "guest1", [tag1.id]);
+    const expense1 = ExpenseTracker.createExpense(
+      null,
+      "expense1",
+      10,
+      guest1.id,
+      [tag1.id]
+    );
+    console.assert(
+      ExpenseTracker.getTag(tag1.id) === tag1,
+      `getTag should return the correct tag`
+    );
+    console.assert(
+      ExpenseTracker.getTagByName("tag1") === tag1,
+      `getTagByName should return the correct tag`
+    );
+    console.assert(
+      ExpenseTracker.getExpense(expense1.id) === expense1,
+      `getExpense should return the correct expense`
+    );
+    console.assert(
+      ExpenseTracker.getExpenseByName("expense1") === expense1,
+      `getExpenseByName should return the correct expense`
+    );
+    console.assert(
+      ExpenseTracker.getGuest(guest1.id) === guest1,
+      `getGuest should return the correct guest`
+    );
+    console.assert(
+      ExpenseTracker.getGuestByName("guest1") === guest1,
+      `getGuestByName should return the correct guest`
+    );
+  }
+
+  static testCreateID() {
+    console.log("Testing createID");
+    const id = ExpenseTracker.createID("tags");
+    console.log("Generated ID: ", id);
+    console.assert(
+      typeof id === "string" && id.startsWith("tags_"),
+      `createID should generate a valid ID`
+    );
+  }
+
+  static testGetOrCreateMethods() {
+    console.log("Testing getOrCreate methods");
+    const tag1 = ExpenseTracker.getOrCreateTag(null, "tag1");
+    const guest1 = ExpenseTracker.getOrCreateGuest(null, "guest1", [tag1.id]);
+    const expense1 = ExpenseTracker.getOrCreateExpense(
+      null,
+      "expense1",
+      10,
+      guest1.id,
+      [tag1.id]
+    );
+    console.assert(
+      ExpenseTracker.getTag(tag1.id) === tag1,
+      `getOrCreateTag should return the correct tag`
+    );
+    console.assert(
+      ExpenseTracker.getGuest(guest1.id) === guest1,
+      `getOrCreateGuest should return the correct guest`
+    );
+    console.assert(
+      ExpenseTracker.getExpense(expense1.id) === expense1,
+      `getOrCreateExpense should return the correct expense`
+    );
   }
 }
