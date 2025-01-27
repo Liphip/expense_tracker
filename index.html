@@ -205,10 +205,28 @@
 
           <h3>Options</h3>
           <div>
-            <button class="input input-button input-inline">Clear All</button>
-            <button class="input input-button input-inline forbidden" disabled>
-              Download CSV
+            <button
+              class="input input-button input-inline"
+              onclick="return clearAll();"
+            >
+              Clear All
             </button>
+            <button
+              class="input input-button input-inline"
+              onclick="return downloadJSON();"
+            >
+              Save to file
+            </button>
+            <form onsubmit="return handleFileSelect(event);">
+              <label for="fileInput">Load from file</label>
+              <input
+                type="file"
+                id="fileInput"
+                accept=".json"
+                title="Load from file"
+              />
+              <input type="submit" value="Load" class="input input-button" />
+            </form>
           </div>
         </div>
 
@@ -238,6 +256,12 @@
 
         <div class="app-item">
           <h2>Guests</h2>
+          <button
+            class="input input-button input-inline"
+            onclick="return clearGuests();"
+          >
+            Clear Guests
+          </button>
           <table>
             <thead>
               <tr>
@@ -258,6 +282,12 @@
 
         <div class="app-item">
           <h2>Tags</h2>
+          <button
+            class="input input-button input-inline"
+            onclick="return clearTags();"
+          >
+            Clear Tags
+          </button>
           <table>
             <thead>
               <tr>
@@ -278,6 +308,12 @@
 
         <div class="app-item">
           <h2>Expenses</h2>
+          <button
+            class="input input-button input-inline"
+            onclick="return clearExpenses();"
+          >
+            Clear Expenses
+          </button>
           <table>
             <thead>
               <tr>
@@ -298,6 +334,21 @@
 
         <div class="app-item">
           <h2>Transactions</h2>
+          <div>
+            <button
+              class="input input-button input-inline"
+              onclick="return downloadTransactions();"
+            >
+              Download Transactions as CSV
+            </button>
+            <button
+              class="input input-button input-inline forbidden"
+              onclick="/*return downloadTransactionsGraph();*/"
+              disabled
+            >
+              Download Transactions as Graph
+            </button>
+          </div>
           <table id="Transactions-table">
             <thead>
               <tr>
@@ -327,7 +378,9 @@
             <button onclick="return toggleDarkMode();">Dark Mode</button>
           </li>
           <li>
-            <a href="https://github.com/Liphip/expense_tracker/issues/new">Report an Issue</a>
+            <a href="https://github.com/Liphip/expense_tracker/issues/new"
+              >Report an Issue</a
+            >
           </li>
         </ul>
       </nav>
